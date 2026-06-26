@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музыкальный чарт</title>
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #b57c94;
+            --accent-color: #e67e22;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-main);
+            margin: 0; 
+            padding: 20px; 
+            line-height: 1.5;
+        }
+
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+        }
+
+        .nav { 
+            margin-bottom: 30px; 
+            background: var(--card-bg); 
+            padding: 15px 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav a.active-link {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.95rem;
+        }
+
+        .username {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .btn-logout {
+            background: #ffeaa7;
+            color: #d63031 !important;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .btn-logout:hover {
+            background: #ffead3 !important;
+        }
+
+        .track-card { 
+            background: var(--card-bg); 
+            border: 1px solid rgba(0,0,0,0.08);
+            border-left: 5px solid var(--secondary-color);
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border-radius: 10px; 
+            display: flex; 
+            align-items: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .track-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .track-avatar { 
+            width: 70px; 
+            height: 70px; 
+            border-radius: 8px; 
+            background: #c87a4b; 
+            margin-right: 20px; 
+            object-fit: cover; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .track-info { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            width: 100%; 
+            align-items: center;
+        }
+
+        .star-rating { 
+            direction: rtl; 
+            display: inline-block; 
+        }
+
+        .star-rating input { 
+            display: none; 
+        }
+
+        .star-rating label { 
+            font-size: 24px; 
+            color: #dfe6e9; 
+            cursor: pointer; 
+            transition: color 0.1s ease;
+        }
+
+        .star-rating input:checked ~ label, 
+        .star-rating label:hover, 
+        .star-rating label:hover ~ label { 
+            color: #f1c40f; 
+        }
+
+        .content-area {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <div class="nav-links">
+                <a href="{% url 'home' %}" class="active-link">🎵 Главная (Чарт)</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'add_track' %}">Добавить трек</a>
+                    {% if user.is_staff %}
+                        <a href="/admin/">Админ-панель</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+            
+            <div class="user-menu">
+                {% if user.is_authenticated %}
+                    <span>Привет, <span class="username">{{ user.username }}</span>!</span>
+                    <a href="{% url 'logout' %}" class="btn-logout">Выйти</a>
+                {% else %}
+                    <a href="/admin/login/?next={{ request.path }}" style="color: var(--primary-color);">Войти на сайт</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="content-area">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</body>
+</html>

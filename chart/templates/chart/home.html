@@ -1,0 +1,69 @@
+{% extends 'chart/base.html' %}
+{% block content %}
+<h2>Музыкальный чарт</h2>
+<div id="tracks-container">
+</div>
+<div id="loading" style="text-align:center; display:none; padding: 20px;">Загрузка...</div>
+
+<script>
+    let page = 1;
+    let action = 'inactive';
+
+    function loadTracks() {
+        if (action === 'inactive') {
+            action = 'active';
+            document.getElementById('loading').style.display = 'block';
+            
+            fetch(`/api/tracks/?page=${page}`)
+                .then(response => response.json())
+                .then(data => {
+                    let container = document.getElementById('tracks-container');
+                    if (data.tracks.length === 0) {
+                        action = 'stopped';
+                        document.getElementById('loading').innerText = "Все треки загружены";
+                        return;
+                    }
+                    
+                    data.tracks.forEach(track => {
+                        let starsHtml = '';
+                        let avg = Math.round(track.rating);
+                        for(let i=1; i<=10; i++) {
+                            starsHtml += i <= avg ? '★' : '☆';
+                        }
+
+                        let card = `
+                            <div class="track-card" onclick="window.location.href='/track/${track.id}/'" style="cursor:pointer;">
+                                <img class="track-avatar" src="${track.avatar || 'https://placeholder.com'}" alt="">
+                                <div class="track-info">
+                                    <div>
+                                        <strong>${track.artist}</strong><br>
+                                        <span>${track.title}</span><br>
+                                        <small>Жанр: ${track.genre}</small><br>
+                                        <small>Рейтинг: ${track.rating.toFixed(1)}/10</small>
+                                    </div>
+                                    <div>
+                                        <small>Год выпуска: ${track.year}</small><br>
+                                        <small>Голосов: ${track.votes_count}</small><br>
+                                        <span class="stars">${starsHtml}</span>
+                                    </div>
+                                </div>
+                            </div>`;
+                        container.innerHTML += card;
+                    });
+                    
+                    action = 'inactive';
+                    page++;
+                    document.getElementById('loading').style.display = 'none';
+                });
+        }
+    }
+
+    window.addEventListener('scroll', () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100 && action === 'inactive') {
+            loadTracks();
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", loadTracks);
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'chart/base.html' %}
+{% block content %}
+<div class="track-card" style="border: 2px solid #b57c94; flex-direction: column; align-items: flex-start; padding: 20px;">
+    <div style="display: flex; width: 100%; margin-bottom: 20px;">
+        <img class="track-avatar" src="{{ track.avatar }}" style="width: 120px; height: 120px;" alt="">
+        <div style="margin-left: 20px;">
+            <h3>Информация об Исполнителе</h3>
+            <p>{{ track.artist_info|default:"Информация отсутствует." }}</p>
+        </div>
+    </div>
+
+    <hr style="width: 100%; border: 0; border-top: 1px solid #ccc;">
+
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="width: 60%;">
+            <h4>Текст песни:</h4>
+            <pre style="font-family: inherit; white-space: pre-wrap;">{{ track.lyrics }}</pre>
+        </div>
+        <div style="width: 35%; text-align: right;">
+            <div class="star-rating">
+                {% if user.is_authenticated and not already_voted %}
+                <form method="POST" action="{% url 'vote' track.id %}">
+                    {% csrf_token %}
+                    <div style="direction: rtl; display: inline-block;">
+                        {% for i in "10987654321"|make_list %}
+                        <input type="submit" name="score" value="{{ i }}" id="star{{ i }}" style="display:none;">
+                        <label for="star{{ i }}" style="font-size:25px; cursor:pointer; color:#ccc;" onclick="this.previousElementSibling.click()">★</label>
+                        {% endfor %}
+                    </div>
+                </form>
+                {% else %}
+                    <span style="color: #e67e22; font-size: 25px;">
+                        {% for i in "1234567890"|make_list %}
+                            {% if forloop.counter <= track.rating %}★{% else %}☆{% endif %}
+                        {% endfor %}
+                    </span>
+                {% endif %}
+            </div>
+            <p><strong>Исполнитель:</strong> {{ track.artist }}</p>
+            <p><strong>Название трека:</strong> {{ track.title }}</p>
+            <p><strong>Жанр:</strong> {{ track.genre }}</p>
+            <p><strong>Рейтинг:</strong> {{ track.rating|floatformat:1 }}/10</p>
+            <p><strong>Год выпуска:</strong> {{ track.year }}</p>
+            <p><strong>Голосов:</strong> {{ track.votes_count }}</p>
+            
+            {% if already_voted %}
+                <p style="color: green; font-size: 12px;">Вы уже проголосовали за этот трек</p>
+            {% elif not user.is_authenticated %}
+                <p style="color: red; font-size: 12px;">Голосовать могут только авторизованные пользователи.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

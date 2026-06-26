@@ -1,0 +1,15 @@
+{% extends 'chart/base.html' %}
+{% block content %}
+<h2>Добавление Трека в чарт</h2>
+<form method="POST" enctype="multipart/form-data" style="background: white; padding: 20px; border-radius: 8px;">
+    {% csrf_token %}
+    <p><label>Исполнитель:</label><br><input type="text" name="artist" required style="width:100%; padding:5px;"></p>
+    <p><label>Название трека:</label><br><input type="text" name="title" required style="width:100%; padding:5px;"></p>
+    <p><label>Жанр:</label><br><input type="text" name="genre" required style="width:100%; padding:5px;"></p>
+    <p><label>Год выпуска:</label><br><input type="number" name="year" required style="width:100%; padding:5px;"></p>
+    <p><label>Информация об исполнителе:</label><br><textarea name="artist_info" rows="3" style="width:100%; padding:5px;"></textarea></p>
+    <p><label>Текст песни:</label><br><textarea name="lyrics" rows="5" style="width:100%; padding:5px;"></textarea></p>
+    <p><label>Обложка / Аватар:</label><br><input type="file" name="avatar" accept="image/*"></p>
+    <button type="submit" style="background: #b57c94; color: white; border: none; padding: 10px 20px; cursor: pointer;">Добавить</button>
+</form>
+{% endblock %}
